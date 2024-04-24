@@ -1,0 +1,15 @@
+{
+  "name": "@dws/sample-app",
+  "version": "1.0.0",
+  "description": "This is a blank project for CDK development with TypeScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "docker build . -t sample-app"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dws/sample-package": "^1.0.1"
+  }
+}
