@@ -9,10 +9,31 @@ export class CodeArtifactCdkSampleStack extends cdk.Stack {
     const domain = new ca.CfnDomain(this, "CodeArtifactDomain", {
       domainName: "my-domain"
     })
+    
+    new ca.CfnPackageGroup(this, "PG-DWS", {
+      domainName: domain.domainName,
+      pattern: "/npm/@dws/*",
+      originConfiguration: {
+        restrictions: {
+          publish: { restrictionMode: "ALLOW" },
+          externalUpstream: { restrictionMode: "BLOCK" },
+          internalUpstream: { restrictionMode: "BLOCK" },
+        },
+      },
+    });
+    
+    // ステージング用レポジトリ
+    const stagingRepo = new ca.CfnRepository(this, "CodeArtifactStagingRepository", {
+      domainName: domain.domainName,
+      repositoryName: "npm-staging",
+      externalConnections: ["public:npmjs"],
+    });
+
+    // 内部プロジェクト用レポジトリ
     const repository = new ca.CfnRepository(this, "CodeArtifactRepository", {
       domainName: domain.domainName,
       repositoryName: "my-repo",
-      externalConnections: ["public:npmjs"],
+      upstreams: [stagingRepo.repositoryName],
     });
     repository.addDependency(domain);
   }
