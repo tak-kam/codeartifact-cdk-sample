@@ -1,14 +1,27 @@
-# Welcome to your CDK TypeScript project
+# Description 
 
-This is a blank project for CDK development with TypeScript.
+This project is a sample AWS CodeArtifact repository created using AWS CDK. It demonstrates how to define a CodeArtifact repository and its associated resources using Infrastructure as Code (IaC) principles. 
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## How to use
 
-## Useful commands
+Run following commands to deploy infrastructure.
+```
+npm install
+# Deploy repositories
+npm run deploy:repo
+# Deploy others
+npm run deploy
+```
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+Connect your npm client to CodeArtifact.
+```
+aws codeartifact login --tool npm --repository my-repo --domain my-domain
+```
+
+Publish sample internal package to CodeArtifact.
+```
+cd sample-package
+npm publish
+```
+
+And run CodePipeline on your AWS console, then you can see in the log that CodeArtifact repository is used in NpmInstallStage.
