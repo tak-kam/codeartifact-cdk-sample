@@ -9,8 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy:repo": "cdk deploy --app 'npx ts-node --prefer-ts-exts bin/repositories.ts' --all",
-    "deploy": "cdk deploy --all"
+    "deploy:repo": "cdk deploy --app 'npx ts-node --prefer-ts-exts bin/repositories.ts' --all --require-approval never",
+    "deploy": "cdk deploy --all --require-approval never"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
