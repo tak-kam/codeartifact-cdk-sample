@@ -19,6 +19,39 @@ export class CodePipelineStack extends Stack {
 
     const repositoryUri = `${cdk.Stack.of(this).account}.dkr.ecr.${cdk.Stack.of(this).region}.amazonaws.com/${ECR_REPOSITORY_NAME}`;
 
+    // CodeBuild用VPCの作成
+    const SUBNET_GROUP_NAME = "CodeBuildSubnetGroup";
+    const vpc = new Vpc(this, "CodeBuildVpc", {
+      maxAzs: 1,
+      ipAddresses: IpAddresses.cidr("10.0.0.0/16"),
+      subnetConfiguration: [
+        {
+          name: SUBNET_GROUP_NAME,
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+          cidrMask: 24,
+        },
+      ],
+    });
+    vpc.addGatewayEndpoint("S3GatewayEndpoint", {
+      service: GatewayVpcEndpointAwsService.S3,
+      subnets: [vpc.selectSubnets({ subnetGroupName: SUBNET_GROUP_NAME })],
+    });
+    const vpceSg = new SecurityGroup(this, "VpceSg", {
+      vpc,
+    });
+    vpc.addInterfaceEndpoint("CodeArtifactRepositoriesVpcEndpoint", {
+      service: InterfaceVpcEndpointAwsService.CODEARTIFACT_REPOSITORIES,
+      securityGroups: [vpceSg],
+    });
+    vpc.addInterfaceEndpoint("CodeArtifactApiVpcEndpoint", {
+      service: InterfaceVpcEndpointAwsService.CODEARTIFACT_API,
+      securityGroups: [vpceSg],
+    });
+    vpc.addInterfaceEndpoint("CloudWatchVpcEndpoint", {
+      service: InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      securityGroups: [vpceSg],
+    });
+
     // ビルドプロジェクトの作成
     const project = new PipelineProject(this, "PipelineProject", {
       buildSpec: BuildSpec.fromObjectToYaml({
