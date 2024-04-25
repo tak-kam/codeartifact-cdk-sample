@@ -29,10 +29,14 @@ export class CodePipelineStack extends Stack {
           // ビルド
           build: {
             commands: ["cd sample-app", "npm install", "npm run build"],
-          
           },
+          // ビルドイメージのECRへのPush
           post_build: {
-            commands: [`docker push ${cdk.Stack.of(this).account}.dkr.ecr.${cdk.Stack.of(this).region}.amazonaws.com/${EcrRepository.fromRepositoryName(this,"EcrRepository",ECR_REPOSITORY_NAME)}:latest`],
+            commands: [
+              `aws ecr get-login-password | docker login --username AWS --password-stdin ${repositoryUri}`,
+              `docker tag sample-app:latest ${repositoryUri}:latest`,
+              `docker push ${repositoryUri}:latest`,
+            ],
           },
         },
       }),
