@@ -17,10 +17,16 @@ export class CodePipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: CodePipelineStackProps) {
     super(scope, id, props);
 
+    // ビルドプロジェクトの作成
     const project = new PipelineProject(this, "PipelineProject", {
       buildSpec: BuildSpec.fromObjectToYaml({
         version: 0.2,
         phases: {
+          // CodeArtifactへのログイン
+          install: {
+            commands: ["pip3 install awscli --upgrade --user", `aws codeartifact login --tool npm --domain my-domain --repository my-repo`],
+          },
+          // ビルド
           build: {
             commands: ["cd sample-app", "npm install", "npm run build"],
           
