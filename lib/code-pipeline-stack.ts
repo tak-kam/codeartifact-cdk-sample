@@ -33,6 +33,7 @@ export class CodePipelineStack extends Stack {
         },
       ],
     });
+    // 必要なVpcEndpointの作成
     vpc.addGatewayEndpoint("S3GatewayEndpoint", {
       service: GatewayVpcEndpointAwsService.S3,
       subnets: [vpc.selectSubnets({ subnetGroupName: SUBNET_GROUP_NAME })],
@@ -53,7 +54,9 @@ export class CodePipelineStack extends Stack {
       securityGroups: [vpceSg],
     });
 
-    // ビルドプロジェクトの作成
+    // npm install 用プロジェクトの作成
+    // VPCに紐付け、プライベートサブネット内で実行することで、
+    // CodeArtifact内部レポジトリのみアクセス出来るようにする
     const npmInstallProjectSg = new SecurityGroup(this, "PipelineProjectSg", {
       vpc,
     });
@@ -83,6 +86,7 @@ export class CodePipelineStack extends Stack {
         },
       }),
     });
+    // ビルド用プロジェクトの作成
     const buildProject = new PipelineProject(this, "BuildPipelineProject", {
       buildSpec: BuildSpec.fromObjectToYaml({
         version: 0.2,
