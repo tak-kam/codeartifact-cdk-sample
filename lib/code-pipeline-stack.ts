@@ -5,10 +5,11 @@ import { Repository as CodeCommitRepository} from "aws-cdk-lib/aws-codecommit"
 import { Pipeline } from "aws-cdk-lib/aws-codepipeline";
 import { Construct } from "constructs";
 import { CodeBuildAction, CodeCommitSourceAction } from "aws-cdk-lib/aws-codepipeline-actions";
-import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
+import { BuildSpec, ComputeType, LinuxBuildImage, PipelineProject } from "aws-cdk-lib/aws-codebuild";
 import { CODE_COMMIT_REPOSITORY_NAME } from "./code-commit-stack";
 import { ECR_REPOSITORY_NAME } from "./ecr-stack";
 import {  Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, IpAddresses, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 
 export type CodePipelineStackProps = {
 } & StackProps;
